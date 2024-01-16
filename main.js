@@ -279,17 +279,19 @@ async function sendFeedsToRemarkable() {
   await new Epub(option, tmp_epub).promise;
   console.log("Done: " + tmp_epub);
 
+  console.log('Upload to Remarkable');
+  await uploadToRemarkable(tmp_epub);
+  console.log('Done');
+
   console.log("Last GUIDs");
   console.log(last_guids);
-
-  await uploadToRemarkable(tmp_epub)
 
   jsonfile.writeFileSync(SAVED_GUIDS_FILE, last_guids)
 
 }
 
 async function uploadToRemarkable(epub_path) {
-    var browser = await chromium.launch({ headless: false });
+    var browser = await chromium.launch({ headless: true });
     var context = await browser.newContext();
     var page = await context.newPage()
     await page.goto('https://my.remarkable.com/myfiles');
