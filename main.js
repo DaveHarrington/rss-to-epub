@@ -202,6 +202,7 @@ async function sendFeedsToRemarkable() {
   try {
     saved_guids = jsonfile.readFileSync(SAVED_GUIDS_FILE);
   } catch {
+    console.log(`Couldn't load ${SAVED_GUIDS_FILE}`);
   }
 
   var parser = new Parser();
@@ -283,10 +284,10 @@ async function sendFeedsToRemarkable() {
   await uploadToRemarkable(tmp_epub);
   console.log('Done');
 
-  console.log("Last GUIDs");
+  console.log("Saving Last GUIDs");
   console.log(last_guids);
-
   jsonfile.writeFileSync(SAVED_GUIDS_FILE, last_guids)
+  console.log('Done');
 
 }
 
@@ -309,4 +310,8 @@ async function uploadToRemarkable(epub_path) {
     await browser.close();
 }
 
-sendFeedsToRemarkable();
+(async() => {
+  await sendFeedsToRemarkable();
+  // rss-parser will sometimes leave sockets dangling: https://github.com/rbren/rss-parser/issues/238
+  process.exit();
+})();
