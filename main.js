@@ -306,7 +306,7 @@ async function uploadToRemarkable(epub_path) {
     await page.getByRole('button').filter({ hasText: 'Updated less than a minute ago' }).click();
     await page.getByLabel('Move').click();
     await page.getByRole('dialog').getByRole('button', { name: 'Feeds' }).click();
-    await page.getByRole('dialog').getByLabel('Move').click();;
+    await page.getByRole('dialog').filter({ hasText: 'Move to' }).click();
     await browser.close();
 }
 
