@@ -12,6 +12,7 @@ const { parse } = require("node-html-parser");
 const execSync = require('child_process').execSync
 const path = require('path');
 const { chromium } = require('playwright');
+const { expect } = require('@playwright/test');
 const jsonfile = require('jsonfile')
 
 const MAX_ITEMS_PER_FEED = 5;
@@ -308,10 +309,13 @@ async function uploadToRemarkable(epub_path) {
       .getByLabel("Import", { exact: true })
       .setInputFiles(epub_path); 
 
-    await page.getByRole('button').filter({ hasText: 'Updated less than a minute ago' }).click();
+    await page.getByRole('button').filter({ hasText: 'Updated less than a minute ago' }).first().click();
     await page.getByLabel('Move').click();
     await page.getByRole('dialog').getByRole('button', { name: 'Feeds' }).click();
-    await page.getByRole('dialog').filter({ hasText: 'Move to' }).click();
+    await page.getByRole('dialog').getByLabel('Move').click()
+    await expect(page.getByRole('dialog').getByLabel('Move')).toHaveCount(0);
+    await page.waitForTimeout(3000)
+
     await browser.close();
 }
 
