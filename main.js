@@ -312,9 +312,10 @@ async function uploadToRemarkable(epub_path) {
     await page.getByRole('button').filter({ hasText: 'Updated less than a minute ago' }).first().click();
     await page.getByLabel('Move').click();
     await page.getByRole('dialog').getByRole('button', { name: 'Feeds' }).click();
+    await page.waitForTimeout(1000);
     await page.getByRole('dialog').getByLabel('Move').click()
     await expect(page.getByRole('dialog').getByLabel('Move')).toHaveCount(0);
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(3000);
 
     await browser.close();
 }
