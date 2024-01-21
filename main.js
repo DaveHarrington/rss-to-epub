@@ -64,9 +64,14 @@ const FORMATS = {
     const cookieJar = new CookieJar();
     const setCookie = util.promisify(cookieJar.setCookie.bind(cookieJar));
     await setCookie(
-      `connect.sid=${process.env.SLOW_BORING_COOKIE}`,
+      `${process.env.SLOW_BORING_COOKIE}`,
       "https://www.slowboring.com"
     );
+    await setCookie(
+      `${process.env.SLOW_BORING_COOKIE2}`,
+      "https://www.slowboring.com"
+    );
+
     const res = await got(item.link, { cookieJar });
     const root = parse(res.body, {
       blockTextElements: {
