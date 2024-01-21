@@ -80,6 +80,11 @@ const FORMATS = {
       },
     });
 
+    const swidgets = root.querySelectorAll(`[data-component-name="SubscribeWidget"]`);
+    swidgets.forEach((widget) => {
+      widget.remove();
+    });
+
     const anchors = root.querySelectorAll(".header-anchor-widget");
     anchors.forEach((anchor) => {
       anchor.remove();
