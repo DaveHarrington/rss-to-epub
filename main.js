@@ -306,23 +306,42 @@ async function uploadToRemarkable(epub_path) {
     var browser = await chromium.launch({ headless: true });
     var context = await browser.newContext();
     var page = await context.newPage()
-    await page.goto('https://my.remarkable.com/myfiles');
-    await page.getByLabel('Email address').fill('ozzy.dave@gmail.com');
-    await page.getByLabel('Password').fill(process.env.REMARKABLE_PASSWD);
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    await page
-      .getByLabel("Import", { exact: true })
-      .setInputFiles(epub_path); 
+ 
+    try {
+        await page.goto('https://my.remarkable.com/myfiles');
+        await page.getByLabel('Email address').fill('ozzy.dave@gmail.com');
+        await page.getByRole('button', { name: 'Continue', exact: true }).click();
+        await page.getByLabel('Password').fill(process.env.REMARKABLE_PASSWD);
+        await page.getByRole('button', { name: 'Continue', exact: true }).click();
+        await page
+          .getByLabel("Import", { exact: true })
+          .setInputFiles(epub_path); 
 
-    await page.getByRole('button').filter({ hasText: 'Updated less than a minute ago' }).first().click();
-    await page.getByLabel('Move').click();
-    await page.getByRole('dialog').getByRole('button', { name: 'Feeds' }).click();
-    await page.waitForTimeout(1000);
-    await page.getByRole('dialog').getByLabel('Move').click()
-    await expect(page.getByRole('dialog').getByLabel('Move')).toHaveCount(0);
-    await page.waitForTimeout(3000);
+	// Cookie nag! Thanks EU
+	const acceptButton = page.locator('text="Accept all"');
+        if (await acceptButton.count() > 0) {
+            await acceptButton.click();
+        }
 
-    await browser.close();
+        await page.getByRole('button').filter({ hasText: 'Updated less than a minute ago' }).first().click();
+	await page.getByRole('button', { name: 'Move', exact: true }).click();
+        await page.getByRole('dialog').getByRole('button', { name: 'Feeds' }).click();
+        await page.waitForTimeout(1000);
+	await page.getByRole('button', { name: 'Move to Feeds' }).click();
+	await expect(page.getByRole('button', { name: 'Move to Feeds' })).toHaveCount(0);
+        await page.waitForTimeout(3000);
+    } catch (error) {
+        console.error('Error occurred:', error);
+        await page.screenshot({ path: '/var/run/rss-to-epub/error-screenshot.png' });
+	const buttons = await page.getByRole('button').all();
+
+        for (const button of buttons) {
+            const name = await button.textContent();
+            console.log(name.trim());
+        }
+    } finally {
+        await browser.close();
+    }
 }
 
 (async() => {

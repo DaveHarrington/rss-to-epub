@@ -6,7 +6,7 @@ if [[ $LOGNAME != "www-data" ]]; then
         echo "Run as www-data, not $LOGNAME"
 fi
 
-cd /home/dave/rss-to-epub/
+cd /opt/rss-to-epub/
 
 docker run -v /var/run/rss-to-epub:/var/run/rss-to-epub rss-to-epub
 
